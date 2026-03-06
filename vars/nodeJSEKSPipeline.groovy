@@ -1,12 +1,14 @@
 // call is the default function name
 def call (Map configMap){
     pipeline {
-    // These are pre-build sections
+
+        // These are pre-build sections
         agent {
             node {
                 label 'AGENT-1'
             }
         }
+
         environment {
             COURSE = "Jenkins"
             appVersion = ""
@@ -14,12 +16,15 @@ def call (Map configMap){
             PROJECT = configMap.get("project")
             COMPONENT = configMap.get("component")
         }
+
         options {
             timeout(time: 10, unit: 'MINUTES') 
             disableConcurrentBuilds()
         }
+
         // This is build section
         stages {
+
             stage('Read Version') {
                 steps {
                     script{
@@ -29,6 +34,7 @@ def call (Map configMap){
                     }
                 }
             }
+
             stage('Install Dependencies') {
                 steps {
                     script{
@@ -38,6 +44,7 @@ def call (Map configMap){
                     }
                 }
             }
+
             stage('Unit Test') {
                 steps {
                     script{
@@ -47,6 +54,7 @@ def call (Map configMap){
                     }
                 }
             }
+
             //Here you need to select scanner tool and send the analysis to server
             /* stage('Sonar Scan'){
                 environment {
@@ -60,15 +68,15 @@ def call (Map configMap){
                     }
                 }
             }
+
             stage('Quality Gate') {
                 steps {
                     timeout(time: 1, unit: 'HOURS') {
-                        // Wait for the quality gate status
-                        // abortPipeline: true will fail the Jenkins job if the quality gate is 'FAILED'
                         waitForQualityGate abortPipeline: true 
                     }
                 }
             } */
+
             // stage('Dependabot Security Gate') {
             //     when {
             //         expression { false }
@@ -82,8 +90,6 @@ def call (Map configMap){
 
             //     steps {
             //         script{
-            //             /* Use sh """ when you want to use Groovy variables inside the shell.
-            //             Use sh ''' when you want the script to be treated as pure shell. */
             //             sh '''
             //             echo "Fetching Dependabot alerts..."
 
@@ -106,18 +112,11 @@ def call (Map configMap){
 
             //             if [ "${high_critical_open_count}" -gt 0 ]; then
             //                 echo "❌ Blocking pipeline due to OPEN HIGH/CRITICAL Dependabot alerts"
-            //                 echo "Affected dependencies:"
-            //                 echo "$response" | jq '.[] 
-            //                 | select(.state=="open" 
-            //                 and (.security_advisory.severity=="high" 
-            //                 or .security_advisory.severity=="critical"))
-            //                 | {dependency: .dependency.package.name, severity: .security_advisory.severity, advisory: .security_advisory.summary}'
             //                 exit 1
             //             else
             //                 echo "✅ No OPEN HIGH/CRITICAL Dependabot alerts found"
             //             fi
             //             '''
-                        
             //         }
             //     }
             // }
@@ -136,7 +135,7 @@ def call (Map configMap){
             //         }
             //     }
             // }
-            
+
             /* stage('Trivy Scan'){
                 steps {
                     script{
@@ -153,39 +152,40 @@ def call (Map configMap){
                 }
             } */
 
-        //     stage('Trigger DEV Deploy') {
-        //         steps {
-        //             script {
-        //                 build job: "../${COMPONENT}-deploy",
-        //                     wait: false, // Wait for completion
-        //                     propagate: false, // Propagate status
-        //                     parameters: [
-        //                         string(name: 'appVersion', value: "${appVersion}"),
-        //                         string(name: 'deploy_to', value: "dev")
-        //                     ]
-        //             }
-        //         }
-        //     }
+            // stage('Trigger DEV Deploy') {
+            //     steps {
+            //         script {
+            //             build job: "../${COMPONENT}-deploy",
+            //                 wait: false,
+            //                 propagate: false,
+            //                 parameters: [
+            //                     string(name: 'appVersion', value: "${appVersion}"),
+            //                     string(name: 'deploy_to', value: "dev")
+            //                 ]
+            //         }
+            //     }
+            // }
 
-        // }
+        }
 
-            
-
-        post{
-            always{
+        post {
+            always {
                 echo 'I will always say Hello again!'
                 cleanWs()
             }
+
             success {
                 echo 'I will run if success'
             }
+
             failure {
                 echo 'I will run if failure'
             }
+
             aborted {
                 echo 'pipeline is aborted'
             }
         }
+
     }
-}
 }
