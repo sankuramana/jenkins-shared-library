@@ -120,6 +120,17 @@ def call (Map configMap){
             //         }
             //     }
             // }
+            stage('Test AWS') {
+    steps {
+        script {
+            withAWS(region:'us-east-1', credentials:'aws-creds') {
+                sh '''
+                    aws sts get-caller-identity
+                '''
+            }
+        }
+    }
+}
 
             stage('Build Image') {
                 steps {
